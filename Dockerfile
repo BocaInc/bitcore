@@ -1,4 +1,4 @@
-FROM node:4
+FROM node:8
 MAINTAINER Gabriel Pacheco <gabriel.wady@gmail.com>
 
 EXPOSE 3001 
