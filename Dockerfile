@@ -1,20 +1,20 @@
-FROM centos:latest
+FROM node:8
 
 EXPOSE 3001 
 #8333 18333
-
-RUN yum -y install git curl which xz tar findutils
-
+USER root
+RUN npm config set unsafe-perm=true
+RUN npm install -g github:bitpay/bitcore#v5.0.0-beta.44
+RUN npm install -g github:bitpay/insight-api#v5.0.0-beta.44
+RUN npm install -g github:bitpay/insight-ui#v5.0.0-beta.44
 RUN groupadd bitcore
-RUN useradd bitcore -m -s /bin/bash -g bitcore
-ENV HOME /home/bitcore
-
+RUN useradd -m -d /home/bitcore -s /bin/bash bitcore
+RUN chown -R bitcore:bitcore /home/bitcore
 USER bitcore
+ENV HOME /home/bitcore
+RUN cd /home/bitcore
+RUN bitcore create bitcore-node
+RUN cd /home/bitcore/bitcore-node
 
-RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.29.0/install.sh | bash
-RUN /bin/bash -l -c "nvm install v4 && nvm alias default v4"
-RUN /bin/bash -l -c "npm install -g github:bitpay/bitcore#v5.0.0-beta.44"
-RUN /bin/bash -l -c "npm install -g github:bitpay/insight-api#v5.0.0-beta.44"
-RUN /bin/bash -l -c "npm install -g github:bitpay/insight-ui#v5.0.0-beta.44"
 
 ENTRYPOINT [ "bitcored" ]
